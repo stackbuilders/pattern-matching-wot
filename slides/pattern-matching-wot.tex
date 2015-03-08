@@ -2,12 +2,61 @@
 
 \usetheme{default}
 
+\usepackage{polyglossia}
+
+\setdefaultlanguage[variant=usmax]{english}
+
+\usepackage{fancyvrb}
+
+\DefineShortVerb{\|}
+\DefineVerbatimEnvironment{code}{Verbatim}{frame=lines}
+
 \title{Pattern Matching}
 \subtitle{Wot's... Uh the Deal?}
-\date{}
+\author{}
+\institute{Stack Builders}
+\date{0.1.0}
 
 \begin{document}
 
 \frame{\titlepage}
+
+\begin{frame}[fragile]
+  \frametitle{}
+
+  \begin{code}
+take1 :: Int -> [a] -> [a]
+take1 n _      | n <= 0 = []
+take1 _ []              = []
+take1 n (x:xs)          = x : take1 (n - 1) xs
+  \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{}
+
+  \begin{code}
+take2 :: Int -> [a] -> [a]
+take2 _ []              = []
+take2 n _      | n <= 0 = []
+take2 n (x:xs)          = x : take2 (n - 1) xs
+  \end{code}
+\end{frame}
+
+\begin{frame}
+  \frametitle{}
+
+  \begin{thebibliography}{}
+  \setbeamertemplate{bibliography item}[article]
+  \bibitem[]{hudak-peterson-fasel-1999}
+    Hudak, Paul, John Peterson, and Joseph H. Fasel (1999).
+    \newblock \emph{A Gentle Introduction to Haskell 98}.
+    \newblock \url{https://www.haskell.org/tutorial/}
+  \setbeamertemplate{bibliography item}[article]
+  \bibitem[]{marlow-2010}
+    Marlow, Simon, ed. (2010).
+    \newblock \emph{Haskell 2010 Language Report}.
+  \end{thebibliography}
+\end{frame}
 
 \end{document}
