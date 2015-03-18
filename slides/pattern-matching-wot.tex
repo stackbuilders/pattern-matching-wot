@@ -22,7 +22,27 @@
 \frame{\titlepage}
 
 \begin{frame}[fragile]
-  \frametitle{}
+  \frametitle{Several Species of Small Furry \texttt{null} functions}
+
+  \begin{code}
+null1 :: [a] -> Bool
+null1 []    = True
+null1 (_:_) = False
+  \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Several Species of Small Furry \texttt{null} functions}
+
+  \begin{code}
+null2 :: [a] -> Bool
+null2 []    = True
+null2 _     = False
+  \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Several Species of Small Furry \texttt{take} functions}
 
   \begin{code}
 take1 :: Int -> [a] -> [a]
@@ -33,7 +53,7 @@ take1 n (x:xs)          = x : take1 (n - 1) xs
 \end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{}
+  \frametitle{Several Species of Small Furry \texttt{take} functions}
 
   \begin{code}
 take2 :: Int -> [a] -> [a]
