@@ -1,5 +1,26 @@
 module Wot where
 
+-- data Bool = False | True
+
+-- data [] a = [] | a : [a]
+
+-- undefined :: a
+-- undefined = undefined
+
+-- |
+--
+-- >>> const1 False
+-- 1
+-- >>> const1 True
+-- 1
+-- >>> const1 undefined
+-- 1
+-- >>> const1 (1/0)
+-- 1
+
+const1 :: a -> Int
+const1 x = 1
+
 -- |
 --
 -- >>> map1 undefined []

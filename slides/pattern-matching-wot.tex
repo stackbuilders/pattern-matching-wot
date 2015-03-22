@@ -2,6 +2,8 @@
 
 \usetheme{default}
 
+\setbeamertemplate{navigation symbols}{}
+
 \usepackage{polyglossia}
 
 \setdefaultlanguage[variant=usmax]{english}
@@ -19,21 +21,65 @@
 
 \begin{document}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \frame{\titlepage}
 
-\begin{frame}
-  \frametitle{Praise for Pattern Matching}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{frame}
+  \frametitle{Praise for pattern matching}
 
   \begin{quote}
     The patch will not be noticeable if the pattern is skilfully
     matched.
   \end{quote}
-  \hfill ---Idabelle McGlauflin
+  \hfill---Idabelle McGlauflin, \emph{Handicraft for Girls}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+  \frametitle{Sd}
+  \framesubtitle{Booleans}
+
+  \begin{code}
+data Bool = False | True
+  \end{code}
 \end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{Several Species of Small Furry \texttt{null} functions}
+  \frametitle{Sd}
+  \framesubtitle{Lists}
+
+  \begin{code}
+data [] a = [] | a : [a]
+  \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{}
+
+  \begin{code}
+undefined :: a
+undefined = undefined
+  \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{}
+
+  \begin{code}
+const1 :: a -> Int
+const1 x = 1
+  \end{code}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+  \frametitle{Informal semantics of pattern matching}
+  \framesubtitle{Several species of small furry \texttt{null} functions}
 
   \begin{code}
 null1 :: [a] -> Bool
@@ -43,7 +89,8 @@ null1 (_:_) = False
 \end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{Several Species of Small Furry \texttt{null} functions}
+  \frametitle{Informal semantics of pattern matching}
+  \framesubtitle{Several species of small furry \texttt{null} functions}
 
   \begin{code}
 null2 :: [a] -> Bool
@@ -52,8 +99,149 @@ null2 _     = False
   \end{code}
 \end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{frame}[fragile]
-  \frametitle{Several Species of Small Furry \texttt{take} functions}
+  \frametitle{}
+
+  \begin{examples}
+    \begin{itemize}
+    \item<1->
+      If |['a','b']| is matched against |['x',undefined]|, then
+      \begin{itemize}
+      \item<2->
+        |'a'| \emph{fails} to match against |'x'|, and
+      \item<2->
+        the result is a failed match.
+      \end{itemize}
+    \item<1->
+      If |['a','b']| is matched against |[undefined,'x']|, then
+      \begin{itemize}
+      \item<2->
+        attempting to match |'a'| against |undefined| causes the match
+        to \emph{diverge}.
+      \end{itemize}
+    \end{itemize}
+  \end{examples}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+  \frametitle{Informal semantics of pattern matching}
+
+  \begin{example}
+    \begin{code}
+> (\ ~(x,y) -> 0) undefined
+
+> (\  (x,y) -> 0) undefined
+
+    \end{code}
+  \end{example}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Informal semantics of pattern matching}
+
+  \begin{example}
+    \begin{code}
+> (\ ~(x,y) -> 0) undefined
+0
+> (\  (x,y) -> 0) undefined
+undefined
+    \end{code}
+  \end{example}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+  \frametitle{Informal semantics of pattern matching}
+
+  \begin{example}
+    \begin{code}
+> (\ ~[x] -> 0) []
+
+> (\ ~[x] -> x) []
+
+    \end{code}
+  \end{example}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Informal semantics of pattern matching}
+
+  \begin{example}
+    \begin{code}
+> (\ ~[x] -> 0) []
+0
+> (\ ~[x] -> x) []
+undefined
+    \end{code}
+  \end{example}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+  \frametitle{Informal semantics of pattern matching}
+
+  \begin{example}
+    \begin{code}
+> (\ ~[x,~(a,b)] -> x) [(0,1),undefined]
+
+> (\ ~[x, (a,b)] -> x) [(0,1),undefined]
+
+    \end{code}
+  \end{example}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Informal semantics of pattern matching}
+
+  \begin{example}
+    \begin{code}
+> (\ ~[x,~(a,b)] -> x) [(0,1),undefined]
+(0,1)
+> (\ ~[x, (a,b)] -> x) [(0,1),undefined]
+undefined
+    \end{code}
+  \end{example}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+  \frametitle{Informal semantics of pattern matching}
+
+  \begin{example}
+    \begin{code}
+> (\  (x:xs) -> x:x:xs) undefined
+
+> (\ ~(x:xs) -> x:x:xs) undefined
+
+    \end{code}
+  \end{example}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Informal semantics of pattern matching}
+
+  \begin{example}
+    \begin{code}
+> (\  (x:xs) -> x:x:xs) undefined
+undefined
+> (\ ~(x:xs) -> x:x:xs) undefined
+undefined:undefined:undefined
+    \end{code}
+  \end{example}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+  \frametitle{Informal semantics of pattern matching}
+  \framesubtitle{Several species of small furry \texttt{take} functions}
 
   \begin{code}
 take1 :: Int -> [a] -> [a]
@@ -64,7 +252,44 @@ take1 n (x:xs)          = x : take1 (n - 1) xs
 \end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{Several Species of Small Furry \texttt{take} functions}
+  \frametitle{Informal semantics of pattern matching}
+  \framesubtitle{Several species of small furry \texttt{take} functions}
+
+  \begin{code}
+take1 :: Int -> [a] -> [a]
+take1 n _      | n <= 0 = []
+take1 _ []              = []
+take1 n (x:xs)          = x : take1 (n - 1) xs
+  \end{code}
+  \begin{code}
+> take1 undefined []
+
+> take1 0 undefined
+
+  \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Informal semantics of pattern matching}
+  \framesubtitle{Several species of small furry \texttt{take} functions}
+
+  \begin{code}
+take1 :: Int -> [a] -> [a]
+take1 n _      | n <= 0 = []
+take1 _ []              = []
+take1 n (x:xs)          = x : take1 (n - 1) xs
+  \end{code}
+  \begin{code}
+> take1 undefined []
+undefined
+> take1 0 undefined
+[]
+  \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Informal semantics of pattern matching}
+  \framesubtitle{Several species of small furry \texttt{take} functions}
 
   \begin{code}
 take2 :: Int -> [a] -> [a]
@@ -74,20 +299,115 @@ take2 n (x:xs)          = x : take2 (n - 1) xs
   \end{code}
 \end{frame}
 
-\begin{frame}
-  \frametitle{}
+\begin{frame}[fragile]
+  \frametitle{Informal semantics of pattern matching}
+  \framesubtitle{Several species of small furry \texttt{take} functions}
 
-  \begin{thebibliography}{}
+  \begin{code}
+take2 :: Int -> [a] -> [a]
+take2 _ []              = []
+take2 n _      | n <= 0 = []
+take2 n (x:xs)          = x : take2 (n - 1) xs
+  \end{code}
+  \begin{code}
+> take2 undefined []
+
+> take2 0 undefined
+
+  \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Informal semantics of pattern matching}
+  \framesubtitle{Several species of small furry \texttt{take} functions}
+
+  \begin{code}
+take2 :: Int -> [a] -> [a]
+take2 _ []              = []
+take2 n _      | n <= 0 = []
+take2 n (x:xs)          = x : take2 (n - 1) xs
+  \end{code}
+  \begin{code}
+> take2 undefined []
+[]
+> take2 0 undefined
+undefined
+  \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Informal semantics of pattern matching}
+  \framesubtitle{Several species of small furry \texttt{take} functions}
+
+  \begin{code}
+> take1 undefined []
+undefined
+> take1 0 undefined
+[]
+  \end{code}
+  \begin{code}
+> take2 undefined []
+[]
+> take2 0 undefined
+undefined
+  \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Informal semantics of pattern matching}
+  \framesubtitle{Several species of small furry \texttt{take} functions}
+
+  \begin{code}
+take1' :: Int -> [a] -> [a]
+take1' n xs     | n <= 0 = seq xs []
+take1' _ []              = []
+take1' n (x:xs)          = x : take1' (n - 1) xs
+  \end{code}
+  \begin{code}
+> take1' undefined []
+undefined
+> take1' 0 undefined
+undefined
+  \end{code}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Informal semantics of pattern matching}
+  \framesubtitle{Several species of small furry \texttt{take} functions}
+
+  \begin{code}
+take2' :: Int -> [a] -> [a]
+take2' n []              = seq n []
+take2' n _      | n <= 0 = []
+take2' n (x:xs)          = x : take2' (n - 1) xs
+  \end{code}
+  \begin{code}
+> take2' undefined []
+undefined
+> take2' 0 undefined
+undefined
+  \end{code}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \frametitle{Bibliography}
+
+  \begin{thebibliography}{Hudak, Peterson, and Fasel 1999}
   \setbeamertemplate{bibliography item}[article]
-  \bibitem[]{hudak-peterson-fasel-1999}
+  \bibitem[Hudak, Peterson, and Fasel 1999]{hudak-peterson-fasel-1999}
     Hudak, Paul, John Peterson, and Joseph H. Fasel (1999).
     \newblock \emph{A Gentle Introduction to Haskell 98}.
     \newblock \url{https://www.haskell.org/tutorial/}
   \setbeamertemplate{bibliography item}[article]
-  \bibitem[]{marlow-2010}
-    Marlow, Simon, ed. (2010).
+  \bibitem[Marlow 2010]{marlow-2010}
+    Marlow, Simon, editor (2010).
     \newblock \emph{Haskell 2010 Language Report}.
+    \newblock \url{https://www.haskell.org/onlinereport/haskell2010/}
   \end{thebibliography}
 \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \end{document}
