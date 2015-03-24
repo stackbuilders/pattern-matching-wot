@@ -1,8 +1,55 @@
 module Wot where
 
+import Prelude hiding (foldr,fromMaybe,isNothing,map,not,span,unzip)
+
+newtype N = N  Bool
+data    D = D !Bool
+
 -- data Bool = False | True
 
+not :: Bool -> Bool
+not False = True
+not True  = False
+
+-- data Maybe a = Nothing | Just a
+
+isNothing :: Maybe a -> Bool
+isNothing Nothing = True
+isNothing _       = False
+
 -- data [] a = [] | a : [a]
+
+map :: (a -> b) -> [a] -> [b]
+map _ []     = []
+map f (x:xs) = f x : map f xs
+
+foldr :: (a -> b -> b) -> b -> [a] -> b
+foldr _ n []     = n
+foldr c n (x:xs) = c x (foldr c n xs)
+
+-- |
+--
+-- >>> span1 (< 3) [1,2,3,4,1,2,3,4]
+-- ([1,2],[3,4,1,2,3,4])
+-- >>> span1 (< 9) [1,2,3]
+-- ([1,2,3],[])
+-- >>> span1 (< 0) [1,2,3]
+-- ([],[1,2,3])
+
+span :: (a -> Bool) -> [a] -> ([a],[a])
+span _ xs@[]       = (xs,xs)
+span p xs@(x:xs')
+  | p x            = let (ys,zs) = span p xs' in (x:ys,zs)
+  | otherwise      = ([],xs)
+
+unzip :: [(a,b)] -> ([a],[b])
+unzip = foldr (\(a,b) ~(as,bs) -> (a:as,b:bs)) ([],[])
+
+fromMaybe :: a -> Maybe a -> a
+fromMaybe d mx =
+  case mx of
+    Nothing -> d
+    Just x  -> x
 
 -- undefined :: a
 -- undefined = undefined

@@ -9,9 +9,10 @@
 \setdefaultlanguage[variant=usmax]{english}
 
 \usepackage{fancyvrb}
+\usepackage{relsize}
 
 \DefineShortVerb{\|}
-\DefineVerbatimEnvironment{code}{Verbatim}{frame=lines}
+\DefineVerbatimEnvironment{code}{Verbatim}{fontsize=\relsize{-1},frame=lines}
 
 \title{Pattern Matching}
 \subtitle{Wot's... Uh the Deal?}
@@ -40,22 +41,170 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}[fragile]
-  \frametitle{Sd}
-  \framesubtitle{Booleans}
+  \frametitle{Wot's... Uh the Deal?}
 
-  \begin{code}
+  \begin{itemize}
+  \item
+    \begin{code}
+newtype N = N  Bool
+data    D = D !Bool
+    \end{code}
+  \item
+    \begin{code}
+> (\  (N True) -> True) undefined
+?
+> (\  (D True) -> True) undefined
+?
+    \end{code}
+  \item
+    \begin{code}
+> (\ ~(N True) -> True) undefined
+?
+> (\ ~(D True) -> True) undefined
+?
+    \end{code}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Wot's... Uh the Deal?}
+
+  \begin{itemize}
+  \item
+    \begin{code}
+newtype N = N  Bool
+data    D = D !Bool
+    \end{code}
+  \item
+    \begin{code}
+> (\  (N True) -> True) undefined
+undefined
+> (\  (D True) -> True) undefined
+undefined
+    \end{code}
+  \item
+    \begin{code}
+> (\ ~(N True) -> True) undefined
+True
+> (\ ~(D True) -> True) undefined
+True
+    \end{code}
+  \end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+  \frametitle{Sd}
+
+  \begin{block}{Booleans}
+    \begin{itemize}
+    \item
+      \begin{code}
 data Bool = False | True
-  \end{code}
+      \end{code}
+    \item
+      \begin{code}
+not :: Bool -> Bool
+not False = True
+not True  = False
+      \end{code}
+    \end{itemize}
+  \end{block}
 \end{frame}
 
 \begin{frame}[fragile]
   \frametitle{Sd}
-  \framesubtitle{Lists}
 
-  \begin{code}
-data [] a = [] | a : [a]
-  \end{code}
+  \begin{block}{Maybe}
+    \begin{itemize}
+    \item
+      \begin{code}
+data Maybe a = Nothing | Just a
+      \end{code}
+    \item
+      \begin{code}
+isNothing :: Maybe a -> Bool
+isNothing Nothing = True
+isNothing _       = False
+      \end{code}
+    \end{itemize}
+  \end{block}
 \end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Sd}
+
+  \begin{block}{Lists}
+    \begin{itemize}
+    \item
+      \begin{code}
+data [] a = [] | a : [a]
+      \end{code}
+    \item
+      \begin{code}
+map :: (a -> b) -> [a] -> [b]
+map _ []     = []
+map f (x:xs) = f x : map f xs
+      \end{code}
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+  \frametitle{Pattern matching}
+  \framesubtitle{Patterns}
+
+  \begin{example}
+    \begin{code}
+span :: (a -> Bool) -> [a] -> ([a],[a])
+span _ xs@[]       = (xs,xs)
+span p xs@(x:xs')
+  | p x            = let (ys,zs) = span p xs' in (x:ys,zs)
+  | otherwise      = ([],xs)
+    \end{code}
+  \end{example}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Pattern matching}
+  \framesubtitle{Patterns}
+
+  \begin{example}
+    \begin{itemize}
+    \item
+      \begin{code}
+foldr :: (a -> b -> b) -> b -> [a] -> b
+foldr _ n []     = n
+foldr c n (x:xs) = c x (foldr c n xs)
+      \end{code}
+    \item
+      \begin{code}
+unzip :: [(a,b)] -> ([a],[b])
+unzip = foldr (\(a,b) ~(as,bs) -> (a:as,b:bs)) ([],[])
+      \end{code}
+    \end{itemize}
+  \end{example}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Pattern matching}
+  \framesubtitle{Patterns}
+
+  \begin{example}
+    \begin{code}
+fromMaybe :: a -> Maybe a -> a
+fromMaybe d mx =
+  case mx of
+    Nothing -> d
+    Just x  -> x
+    \end{code}
+  \end{example}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}[fragile]
   \frametitle{}
@@ -387,6 +536,14 @@ undefined
 > take2' 0 undefined
 undefined
   \end{code}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \frametitle{Formal semantics of pattern matching}
+
+  Sd.
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
