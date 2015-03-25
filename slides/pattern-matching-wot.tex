@@ -18,7 +18,7 @@
 \subtitle{Wot's... Uh the Deal?}
 \author{}
 \institute{Stack Builders}
-\date{0.1.0}
+\date{0.2.0}
 
 \begin{document}
 
@@ -95,7 +95,8 @@ True
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}[fragile]
-  \frametitle{Sd}
+  \frametitle{Pattern matching}
+  \framesubtitle{Introduction}
 
   \begin{block}{Booleans}
     \begin{itemize}
@@ -114,7 +115,8 @@ not True  = False
 \end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{Sd}
+  \frametitle{Pattern matching}
+  \framesubtitle{Introduction}
 
   \begin{block}{Maybe}
     \begin{itemize}
@@ -133,7 +135,8 @@ isNothing _       = False
 \end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{Sd}
+  \frametitle{Pattern matching}
+  \framesubtitle{Introduction}
 
   \begin{block}{Lists}
     \begin{itemize}
@@ -182,8 +185,38 @@ foldr c n (x:xs) = c x (foldr c n xs)
       \end{code}
     \item
       \begin{code}
-unzip :: [(a,b)] -> ([a],[b])
-unzip = foldr (\(a,b) ~(as,bs) -> (a:as,b:bs)) ([],[])
+unzip1 :: [(a,b)] -> ([a],[b])
+unzip1 = foldr (\(a,b) ~(as,bs) -> (a:as,b:bs)) ([],[])
+      \end{code}
+    \item
+      \begin{code}
+unzip2 :: [(a,b)] -> ([a],[b])
+unzip2 = foldr (\(a,b)  (as,bs) -> (a:as,b:bs)) ([],[])
+      \end{code}
+    \end{itemize}
+  \end{example}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Pattern matching}
+  \framesubtitle{Patterns}
+
+  \begin{example}
+    \begin{itemize}
+    \item
+      \begin{code}
+unzip3 :: [(a,b)] -> ([a],[b])
+unzip3 []          = ([],[])
+unzip3 ((a,b):abs) = (a:as,b:bs) where (as,bs) = unzip3 abs
+      \end{code}
+    \item
+      \begin{code}
+> (head . fst) (unzip1 [(n,n) | n <- [1..]])
+1
+> (head . fst) (unzip2 [(n,n) | n <- [1..]])
+...
+> (head . fst) (unzip3 [(n,n) | n <- [1..]])
+1
       \end{code}
     \end{itemize}
   \end{example}
@@ -207,21 +240,156 @@ fromMaybe d mx =
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}[fragile]
-  \frametitle{}
+  \frametitle{Pattern matching}
+  \framesubtitle{Strict and nonstrict functions}
 
-  \begin{code}
+  \begin{itemize}
+  \item
+    \begin{code}
 undefined :: a
 undefined = undefined
-  \end{code}
+    \end{code}
+  \end{itemize}
+  \begin{itemize}
+  \item
+    A function |f| is \emph{strict} if
+    \begin{code}
+> f undefined
+undefined
+    \end{code}
+    and
+  \item
+    \emph{nonstrict} otherwise.
+  \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{}
+  \frametitle{Pattern matching}
+  \framesubtitle{Strict and nonstrict functions}
 
-  \begin{code}
+  \begin{examples}
+  \begin{itemize}
+  \item
+    \begin{code}
+id :: a -> a
+id x = x
+    \end{code}
+  \item
+    \begin{code}
 const1 :: a -> Int
 const1 x = 1
-  \end{code}
+    \end{code}
+  \item
+    \begin{code}
+> id undefined
+undefined
+> const1 undefined
+1
+    \end{code}
+  \end{itemize}
+  \end{examples}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+  \frametitle{Informal semantics of pattern matching}
+
+  \begin{itemize}
+  \item
+    \emph{Patterns} are \emph{matched} against values.
+  \item
+    Pattern matching may
+    \begin{itemize}
+    \item
+      \emph{fail},
+    \item
+      \emph{succeed}, or
+    \item
+      \emph{diverge} (that is, |undefined|).
+    \end{itemize}
+  \item
+    Pattern matching proceeds from left to right, and from top to
+    bottom.
+  \end{itemize}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[fragile]
+  \frametitle{Informal semantics of pattern matching}
+  \framesubtitle{Rules}
+
+  \begin{enumerate}
+  \item[1]
+    Matching |var| against |v| succeeds.
+  \item[2]
+    Matching |~apat| against |v| succeeds.
+  \item[3]
+    Matching |_| against |v| succeeds.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Informal semantics of pattern matching}
+  \framesubtitle{Rules}
+
+  \begin{enumerate}
+  \item[4]
+    Matching |con pat| (|newtype|):
+    \begin{itemize}
+    \item
+      if against |con v|, match |pat| against |v|.
+    \item
+      if against |undefined|, match |pat| against |undefined|.
+    \end{itemize}
+  \item[5]
+    Matching |con pat_1 ... pat_n| (|data|):
+    \begin{itemize}
+    \item
+      if against |con v_1 ... v_n|, match subpatterns.
+    \item
+      if against |con' v_1 ... v_m|, fails.
+    \item
+      |undefined|, diverges.
+    \end{itemize}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Informal semantics of pattern matching}
+  \framesubtitle{Rules}
+
+  \begin{enumerate}
+  \item[6]
+    ...
+  \item[7]
+    Matching a numeric, character, or string literal |k| against |v|
+    succeeds if |v == k|.
+  \item[8]
+    Matching |var@apat| against |v|, match |apat| against |v|.
+  \end{enumerate}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}
+  \frametitle{Informal semantics of pattern matching}
+
+  \begin{itemize}
+  \item
+    A pattern can be
+    \begin{itemize}
+    \item
+      \emph{irrefutable} or
+    \item
+      \emph{refutable}.
+    \end{itemize}
+  \item
+    Matching an irrefutable pattern is nonstrict.
+  \item
+    Matching a refutable pattern is strict.
+  \end{itemize}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -230,28 +398,26 @@ const1 x = 1
   \frametitle{Informal semantics of pattern matching}
   \framesubtitle{Several species of small furry \texttt{null} functions}
 
-  \begin{code}
+  \begin{itemize}
+  \item
+    \begin{code}
 null1 :: [a] -> Bool
 null1 []    = True
 null1 (_:_) = False
-  \end{code}
-\end{frame}
-
-\begin{frame}[fragile]
-  \frametitle{Informal semantics of pattern matching}
-  \framesubtitle{Several species of small furry \texttt{null} functions}
-
-  \begin{code}
+    \end{code}
+  \item
+    \begin{code}
 null2 :: [a] -> Bool
 null2 []    = True
 null2 _     = False
-  \end{code}
+    \end{code}
+  \end{itemize}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}[fragile]
-  \frametitle{}
+  \frametitle{Informal semantics of pattern matching}
 
   \begin{examples}
     \begin{itemize}
@@ -536,14 +702,6 @@ undefined
 > take2' 0 undefined
 undefined
   \end{code}
-\end{frame}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{frame}
-  \frametitle{Formal semantics of pattern matching}
-
-  Sd.
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
