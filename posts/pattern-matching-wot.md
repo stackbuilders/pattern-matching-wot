@@ -25,7 +25,7 @@ works.
 As a summary of the different kinds of pattern matching, let's
 consider three functions, all from the standard libraries:
 
-```
+```haskell
 span :: (a -> Bool) -> [a] -> ([a],[a]) -- Defined in GHC.List
 span _ xs@[]       = (xs,xs)
 span p xs@(x:xs')
@@ -35,14 +35,21 @@ span p xs@(x:xs')
 
 span has a wildcard, as-patterns, regular pattern matching on lists.
 
-```
+span, applied to a predicate p and a list xs, returns a tuple where
+first element is longest prefix (possibly empty) of xs of elements
+that satisfy p and second element is the remainder of the list.
+
+```haskell
 unzip :: [(a,b)] -> ([a],[b]) -- Defined in GHC.List
 unzip = foldr (\(a,b) ~(as,bs) -> (a:as,b:bs)) ([],[])
 ```
 
 unzip has lambdas and lazy patterns.
 
-```
+unzip transforms a list of pairs into a list of first components and a
+list of second components.
+
+```haskell
 fromMaybe :: a -> Maybe a -> a -- Defined in Data.Maybe
 fromMaybe d mx =
   case mx of
@@ -52,6 +59,11 @@ fromMaybe d mx =
 
 fromMaybe has pattern matching in case expressions, which is what all
 pattern matching is anyway.
+
+the fromMaybe function takes a default value and a Maybe value. If the
+Maybe is Nothing, it returns the default value; otherwise, it returns
+the value contained in the Maybe.
+
 
 Now, the basics of pattern matching are very simple. We pattern match
 against values and proceed from left to right, from top to bottom, and
@@ -76,6 +88,9 @@ And matching an as pattern var@apat against v, if apat against v.
 
 So, patterns can be irrefutable or refutable. Matching an irrefutable
 pattern is nonstrict, matching a refutable one is strict.
+
+The eight rules can be summarized in that some patterns are
+irrefutable and the rest are refutable.
 
 Take, for instance,
 
@@ -114,7 +129,13 @@ undefined:undefined:undefined
 Also, in the gentle introduction the authors discuss two slightly
 different versions of the take function to show how subtle changes
 with pattern matching yield different functions. Let's do the same
-with the drop function:
+with the drop function: Let's consider this definition of drop:
+
+"The pattern-matching rules can have subtle effects on the meaning of
+functions." We see that take is more defined with respect to its
+second argument, whereas take1 is more defined with respect to its
+first. It is difficult to say in this case which definition is better.
+Just remember that in certain applications, it may make a difference.
 
 ```
 drop1 :: Int -> [a] -> [a]
@@ -122,6 +143,9 @@ drop1 n xs     | n <= 0 = xs
 drop1 _ []              = []
 drop1 n (x:xs)          = drop1 (n - 1) xs
 ```
+
+and this slightly different version (the first two equations have been
+reversed):
 
 ```
 drop2 :: Int -> [a] -> [a]
