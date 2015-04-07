@@ -95,7 +95,7 @@ irrefutable and the rest are refutable.
 Take, for instance,
 
 ```
-> (\ ~(x,y) -> 0) ⊥
+> (\ ~(x,y) -> 0) undefined
 0
 ```
 
@@ -137,7 +137,7 @@ second argument, whereas take1 is more defined with respect to its
 first. It is difficult to say in this case which definition is better.
 Just remember that in certain applications, it may make a difference.
 
-```
+```haskell
 drop1 :: Int -> [a] -> [a]
 drop1 n xs     | n <= 0 = xs
 drop1 _ []              = []
@@ -147,7 +147,7 @@ drop1 n (x:xs)          = drop1 (n - 1) xs
 and this slightly different version (the first two equations have been
 reversed):
 
-```
+```haskell
 drop2 :: Int -> [a] -> [a]
 drop2 _ []              = []
 drop2 n xs     | n <= 0 = xs
