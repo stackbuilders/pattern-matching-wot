@@ -25,44 +25,50 @@ works.
 As a summary of the different kinds of pattern matching, let's
 consider three functions, all from the standard libraries:
 
-```haskell
-span :: (a -> Bool) -> [a] -> ([a],[a]) -- Defined in GHC.List
-span _ xs@[]       = (xs,xs)
-span p xs@(x:xs')
-  | p x            = let (ys,zs) = span p xs' in (x:ys,zs)
-  | otherwise      = ([],xs)
-```
+- `span`
 
-span has a wildcard, as-patterns, regular pattern matching on lists.
+  ```haskell
+  span :: (a -> Bool) -> [a] -> ([a],[a]) -- Defined in GHC.List
+  span _ xs@[]       = (xs,xs)
+  span p xs@(x:xs')
+    | p x            = let (ys,zs) = span p xs' in (x:ys,zs)
+    | otherwise      = ([],xs)
+  ```
 
-span, applied to a predicate p and a list xs, returns a tuple where
-first element is longest prefix (possibly empty) of xs of elements
-that satisfy p and second element is the remainder of the list.
+  span has a wildcard, as-patterns, regular pattern matching on lists.
 
-```haskell
-unzip :: [(a,b)] -> ([a],[b]) -- Defined in GHC.List
-unzip = foldr (\(a,b) ~(as,bs) -> (a:as,b:bs)) ([],[])
-```
+  span, applied to a predicate p and a list xs, returns a tuple where
+  first element is longest prefix (possibly empty) of xs of elements
+  that satisfy p and second element is the remainder of the list.
 
-unzip has lambdas and lazy patterns.
+- `unzip`
 
-unzip transforms a list of pairs into a list of first components and a
-list of second components.
+  ```haskell
+  unzip :: [(a,b)] -> ([a],[b]) -- Defined in GHC.List
+  unzip = foldr (\(a,b) ~(as,bs) -> (a:as,b:bs)) ([],[])
+  ```
 
-```haskell
-fromMaybe :: a -> Maybe a -> a -- Defined in Data.Maybe
-fromMaybe d mx =
-  case mx of
-    Nothing -> d
-    Just x  -> x
-```
+  unzip has lambdas and lazy patterns.
 
-fromMaybe has pattern matching in case expressions, which is what all
-pattern matching is anyway.
+  unzip transforms a list of pairs into a list of first components and
+  a list of second components.
 
-the fromMaybe function takes a default value and a Maybe value. If the
-Maybe is Nothing, it returns the default value; otherwise, it returns
-the value contained in the Maybe.
+- `fromMaybe`
+
+  ```haskell
+  fromMaybe :: a -> Maybe a -> a -- Defined in Data.Maybe
+  fromMaybe d mx =
+    case mx of
+      Nothing -> d
+      Just x  -> x
+  ```
+
+  fromMaybe has pattern matching in case expressions, which is what
+  all pattern matching is anyway.
+
+  the fromMaybe function takes a default value and a Maybe value. If
+  the Maybe is Nothing, it returns the default value; otherwise, it
+  returns the value contained in the Maybe.
 
 
 Now, the basics of pattern matching are very simple. We pattern match
